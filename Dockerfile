@@ -1,10 +1,12 @@
-FROM golang:1.20
+FROM golang:alpine as builder
 
-WORKDIR /app
+WORKDIR /go/src/app
 
-COPY go.mod ./
-COPY app.go ./
+COPY . .
 
-RUN go build -o /fullcycle
+RUN CGO_ENABLE=0 go build -o /app main.go
+FROM scratch
 
-CMD ["/fullcycle"]
+COPY --from=builder /app /app
+
+CMD ["/app"]
